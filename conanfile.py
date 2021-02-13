@@ -32,7 +32,7 @@ class GltfSdkConan(ConanFile):
             del self.options.fPIC
         if self.settings.compiler.get_safe("cppstd"):
             tools.check_min_cppstd(self, 14)
-        if self.settings.os != "Windwows":
+        if self.settings.os != "Windows":
             raise ConanInvalidConfiguration("Windows only")
 
     def requirements(self):
