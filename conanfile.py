@@ -27,11 +27,25 @@ class GltfSdkConan(ConanFile):
         if self.settings.os == "Windows":
             del self.options.fPIC
 
+    @property
+    def _minimum_compilers_version(self):
+        return {
+            "Visual Studio": "14",
+            "gcc": "6",
+            "clang": "5",
+            "apple-clang": "5.1",
+        }
+
     def configure(self):
         if self.options.shared:
             del self.options.fPIC
         if self.settings.compiler.get_safe("cppstd"):
             tools.check_min_cppstd(self, 14)
+        minimum_version = self._minimum_compilers_version.get(str(self.settings.compiler), False)
+        if not minimum_version:
+            self.output.warn("gltf-sdk requires C++14. Your compiler is unknown. Assuming it supports C++14.")
+        elif tools.Version(self.settings.compiler.version) < minimum_version:
+            raise ConanInvalidConfiguration("gltf-sdk requires C++14, which your compiler does not support.")
         if self.settings.compiler == "Visual Studio" and self.options.shared:
             raise ConanInvalidConfiguration("gltf-sdf shared in not supported by Visual Studio")
 
