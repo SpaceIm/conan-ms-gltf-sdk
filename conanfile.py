@@ -32,6 +32,8 @@ class GltfSdkConan(ConanFile):
             del self.options.fPIC
         if self.settings.compiler.get_safe("cppstd"):
             tools.check_min_cppstd(self, 14)
+        if self.settings.compiler == "Visual Studio" and self.options.shared:
+            raise ConanInvalidConfiguration("gltf-sdf shared in not supported by Visual Studio")
 
     def requirements(self):
         self.requires("rapidjson/1.1.0")
@@ -45,16 +47,6 @@ class GltfSdkConan(ConanFile):
         tools.get(**self.conan_data["sources"][self.version])
         os.rename("glTF-SDK-r" + self.version, self._source_subfolder)
 
-    def _patch_sources(self):
-        for patch in self.conan_data.get("patches", {}).get(self.version, []):
-            tools.patch(**patch)
-        tools.replace_in_file(os.path.join(self._source_subfolder, "CMakeLists.txt"),
-                              "if (WIN32)", "if (MSVC)")
-        tools.replace_in_file(os.path.join(self._source_subfolder, "CMakeLists.txt"),
-                              "add_subdirectory(External/RapidJSON)", "")
-        tools.replace_in_file(os.path.join(self._source_subfolder, "CMakeLists.txt"),
-                              "add_subdirectory(External/googletest)", "")
-
     def _configure_cmake(self):
         if self._cmake:
             return self._cmake
@@ -65,7 +57,8 @@ class GltfSdkConan(ConanFile):
         return self._cmake
 
     def build(self):
-        self._patch_sources()
+        for patch in self.conan_data.get("patches", {}).get(self.version, []):
+            tools.patch(**patch)
         cmake = self._configure_cmake()
         cmake.build()
 
