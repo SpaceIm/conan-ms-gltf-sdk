@@ -1,6 +1,6 @@
 --- a/Build/CMake/Modules/GLTFPlatform.cmake
 +++ b/Build/CMake/Modules/GLTFPlatform.cmake
-@@ -55,10 +55,9 @@ endfunction(GetGLTFPlatform)
+@@ -55,13 +55,12 @@ endfunction(GetGLTFPlatform)
  function(CreateGLTFInstallTargets target platform)
  
      install(TARGETS ${target}
@@ -13,7 +13,11 @@
 +        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
      )
  
-     if (MSVC)
+-    if (MSVC)
++    if (0)
+         install(FILES ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/${PROJECT_NAME}.pdb DESTINATION ${CMAKE_SOURCE_DIR}/Built/Out/${platform}/$<CONFIG>/${PROJECT_NAME})
+     endif()
+ 
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -16,7 +16,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
